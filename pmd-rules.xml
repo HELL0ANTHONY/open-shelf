@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset
+    name="OpenShelf"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+  <description>PMD rules for OpenShelf — strict, but Builder- and DDD-model aware.</description>
+
+  <!-- Best practices: full ruleset (includes SystemPrintln, UseLogger, etc.) -->
+  <rule ref="category/java/bestpractices.xml"/>
+
+  <!-- Error-prone patterns: full ruleset -->
+  <rule ref="category/java/errorprone.xml"/>
+
+  <rule ref="category/java/design.xml">
+    <!--
+      DataClass: domain entities in Stage 1 are intentionally data-centric.
+      WOC grows naturally as business rules (validation, state transitions) are added.
+      Re-enable this rule once the domain model matures in Stage 2.
+    -->
+    <exclude name="DataClass"/>
+
+    <!--
+      LawOfDemeter: the Builder pattern's private constructor accesses Builder fields
+      by design — Builder is a static inner class of the class it builds. Adding
+      getter methods to Builder just to satisfy LoD adds noise without benefit.
+    -->
+    <exclude name="LawOfDemeter"/>
+
+    <!--
+      AvoidFieldNameMatchingMethodName: fluent builder methods are named after their
+      field (e.g. .title("x") sets field `title`). Suppressed on the Builder class
+      via @SuppressWarnings; active everywhere else.
+    -->
+  </rule>
+
+</ruleset>

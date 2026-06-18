@@ -1,0 +1,24 @@
+{
+  "name": "Java Dev Container",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+
+  // Sobreescribe el CMD ["mvn","test"] del Dockerfile para que el
+  // contenedor quede "vivo" en vez de correr los tests y salir.
+  "overrideCommand": true,
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "java.saveActions.organizeImports": true,
+        "java.compile.nullAnalysis.mode": "automatic"
+      }
+    }
+  }
+}
