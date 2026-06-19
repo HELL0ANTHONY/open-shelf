@@ -1,9 +1,16 @@
 package com.openshelf.book;
 
+import com.openshelf.shared.Preconditions;
 import java.time.LocalDate;
 
 /** Represents a book author. */
 public final class Author {
+
+  /** The maximum length for an author's first name. */
+  public static final int MAX_FIRST_NAME_LENGTH = 50;
+
+  /** The maximum length for an author's last name. */
+  public static final int MAX_LAST_NAME_LENGTH = 50;
 
   private final String firstName;
   private final String lastName;
@@ -26,10 +33,28 @@ public final class Author {
       LocalDate birthDate,
       String nationality,
       String biography) {
+
+    Preconditions.requireNotBlank(firstName, "Author's first name cannot be null or blank");
+    Preconditions.checkArgument(
+        firstName.length() <= MAX_FIRST_NAME_LENGTH,
+        "Author's first name cannot exceed " + MAX_FIRST_NAME_LENGTH + " characters");
     this.firstName = firstName;
+
+    Preconditions.requireNotBlank(lastName, "Author's last name cannot be null or blank");
+    Preconditions.checkArgument(
+        lastName.length() <= MAX_LAST_NAME_LENGTH,
+        "Author's last name cannot exceed " + MAX_LAST_NAME_LENGTH + " characters");
     this.lastName = lastName;
+
+    Preconditions.checkNotNull(birthDate, "Author's birth date cannot be null");
+    Preconditions.checkArgument(
+        birthDate.isBefore(LocalDate.now()), "Author's birth date must be in the past");
     this.birthDate = birthDate;
+
+    Preconditions.requireNotBlank(nationality, "Author's nationality cannot be null or blank");
     this.nationality = nationality;
+
+    Preconditions.checkNotNull(biography, "Author's biography cannot be null");
     this.biography = biography;
   }
 
