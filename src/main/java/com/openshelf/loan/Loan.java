@@ -1,6 +1,7 @@
 package com.openshelf.loan;
 
 import com.openshelf.book.Book;
+import com.openshelf.shared.Preconditions;
 import com.openshelf.user.Member;
 import java.time.LocalDate;
 
@@ -31,9 +32,18 @@ public final class Loan {
    * @param loanDate the date the book was checked out
    */
   public Loan(String id, Book book, Member member, LocalDate loanDate) {
+    Preconditions.requireNotBlank(id, "Loan ID cannot be null or blank");
     this.id = id;
+
+    Preconditions.checkNotNull(book, "Book cannot be null");
     this.book = book;
+
+    Preconditions.checkNotNull(member, "Member cannot be null");
     this.member = member;
+
+    Preconditions.checkNotNull(loanDate, "Loan date cannot be null");
+    Preconditions.checkArgument(
+        !loanDate.isAfter(LocalDate.now()), "Loan date cannot be in the future");
     this.loanDate = loanDate;
     this.dueDate = loanDate.plusDays(DURATION_DAYS);
     this.status = LoanStatus.ACTIVE;
