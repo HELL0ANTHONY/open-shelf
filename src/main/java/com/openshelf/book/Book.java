@@ -1,5 +1,6 @@
 package com.openshelf.book;
 
+import com.openshelf.shared.isbn.IsbnValidator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -109,9 +110,13 @@ public final class Book {
   @SuppressWarnings({
     "checkstyle:HiddenField",
     "checkstyle:JavadocMethod",
-    "PMD.AvoidFieldNameMatchingMethodName"
+    "PMD.AvoidFieldNameMatchingMethodName",
+    "PMD.TooManyMethods"
   })
   public static final class Builder {
+
+    /** Maximum allowed length for a book title. */
+    public static final int MAX_TITLE_LENGTH = 255;
 
     private String title;
     private String isbn;
@@ -169,7 +174,62 @@ public final class Book {
      * @return a new, immutable Book
      */
     public Book build() {
+      List<String> errors = validate();
+
+      if (!errors.isEmpty()) {
+        throw new IllegalStateException("Invalid Book: " + String.join("; ", errors));
+      }
+
       return new Book(this);
+    }
+
+    private List<String> validate() {
+      List<String> errors = new ArrayList<>();
+      validateTitle(errors);
+      validatePublicationDate(errors);
+      validateIsbn(errors);
+
+      if (pageCount <= 0) {
+        errors.add("Page count must be a positive integer");
+      }
+
+      if (language == null) {
+        errors.add("Language cannot be null");
+      }
+
+      if (author == null) {
+        errors.add("Author cannot be null");
+      }
+
+      if (categories.contains(null)) {
+        errors.add("Categories cannot contain null values");
+      }
+
+      return errors;
+    }
+
+    private void validateTitle(List<String> errors) {
+      if (title == null || title.isBlank()) {
+        errors.add("Title cannot be null or blank");
+      } else if (title.length() > MAX_TITLE_LENGTH) {
+        errors.add("Title cannot exceed " + MAX_TITLE_LENGTH + " characters");
+      }
+    }
+
+    private void validatePublicationDate(List<String> errors) {
+      if (publicationDate == null) {
+        errors.add("Publication date cannot be null");
+      } else if (publicationDate.isAfter(LocalDate.now())) {
+        errors.add("Publication date cannot be in the future");
+      }
+    }
+
+    private void validateIsbn(List<String> errors) {
+      if (isbn == null || isbn.isBlank()) {
+        errors.add("ISBN cannot be null or blank");
+      } else if (!IsbnValidator.isValidIsbn13(isbn)) {
+        errors.add("ISBN must be a valid ISBN-13 format");
+      }
     }
   }
 }
